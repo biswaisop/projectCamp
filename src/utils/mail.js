@@ -1,4 +1,43 @@
 import Mailgen from "mailgen";
+import nodemailer from "nodemailer"
+
+const sendEmail = async(options) => {
+    const generator = new Mailgen(
+        {
+            theme: "default",
+            product: {
+                name: "Project Camp",
+                link: "https://projectcamp.com"
+            },
+        }
+    )
+    const emailTextual = generator.generatePlaintext(options.mailgenContent)
+    const emailHtml = mailgenContent.generate (options.mailgenContent)
+
+    const transporter = nodemailer.createTransport({
+        host: process.env.MAILTRAP_HOST,
+        port: process.env.MAILTRAP_PORT,
+        auth: {
+            user: process.env.MAILTRAP_USER,
+            pass: process.env.MAILTRAP_PASS
+        }
+    })
+
+    const mail = {
+        from: "mail.projectcamp@example.com",
+        to: options.email,
+        subject: options.subject,
+        text: options.emailTextual,
+        html: options.emailHtml
+    }
+
+    try {
+        await transporter.sendMail(mail)
+    } catch (error) {
+        console.error("Email Service failed!")
+    }
+}
+
 
 const emailVerificationMailgenContent = (username, verificationURL) => {
     return {
@@ -38,5 +77,6 @@ const forgotPasswordMailgenContent = (username, passwordResetURL) => {
 
 export {
     emailVerificationMailgenContent, 
-    forgotPasswordMailgenContent
+    forgotPasswordMailgenContent,
+    sendEmail
 }
